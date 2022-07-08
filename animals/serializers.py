@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.views import status
 
 from animals.models import Animal
 from characteristics.models import Characteristic
@@ -32,3 +33,21 @@ class AnimalSerializer(serializers.Serializer):
             animal.characteristics.add(item)
 
         return animal
+
+    def update(self, instance, validated_data):
+
+        if validated_data.get("sex"):
+            raise ValueError({"error": "You cannot update sex property"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        if validated_data.get("group"):
+            raise ValueError({"error": "You cannot update group property"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        if validated_data.get("characteristics"):
+            raise ValueError({"error": "You cannot update characteristics property"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.age = validated_data.get('age', instance.age)
+        instance.weight = validated_data.get('weight', instance.weight)
+        instance.save()
+
+        return instance
